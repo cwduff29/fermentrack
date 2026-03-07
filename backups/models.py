@@ -87,6 +87,12 @@ class Backup(TimeStampedModel):
             'tilt_gravity_calibration_points': backup_funcs.dump_tilt_gravity_calibration_points(),
             'ispindels': backup_funcs.dump_ispindel_configurations(),
             'ispindel_gravity_calibration_points': backup_funcs.dump_ispindel_gravity_calibration_points(),
+
+            'generic_push_targets': backup_funcs.dump_generic_push_targets(),
+            'brewers_friend_push_targets': backup_funcs.dump_brewers_friend_push_targets(),
+            'brewfather_push_targets': backup_funcs.dump_brewfather_push_targets(),
+            'thingspeak_push_targets': backup_funcs.dump_thingspeak_push_targets(),
+            'grainfather_push_targets': backup_funcs.dump_grainfather_push_targets(),
         }
         return backup_dict
 
@@ -205,6 +211,22 @@ class Backup(TimeStampedModel):
             restore_result['ispindel_gravity_calibration_points'] = \
                 restore_funcs.restore_ispindel_gravity_calibration_points(
                     backup_dict['ispindel_gravity_calibration_points'], update=update)
+
+        if 'generic_push_targets' in backup_dict:
+            restore_result['generic_push_targets'] = restore_funcs.restore_generic_push_targets(
+                backup_dict['generic_push_targets'], update=update)
+        if 'brewers_friend_push_targets' in backup_dict:
+            restore_result['brewers_friend_push_targets'] = restore_funcs.restore_brewers_friend_push_targets(
+                backup_dict['brewers_friend_push_targets'], update=update)
+        if 'brewfather_push_targets' in backup_dict:
+            restore_result['brewfather_push_targets'] = restore_funcs.restore_brewfather_push_targets(
+                backup_dict['brewfather_push_targets'], update=update)
+        if 'thingspeak_push_targets' in backup_dict:
+            restore_result['thingspeak_push_targets'] = restore_funcs.restore_thingspeak_push_targets(
+                backup_dict['thingspeak_push_targets'], update=update)
+        if 'grainfather_push_targets' in backup_dict:
+            restore_result['grainfather_push_targets'] = restore_funcs.restore_grainfather_push_targets(
+                backup_dict['grainfather_push_targets'], update=update)
 
 
 

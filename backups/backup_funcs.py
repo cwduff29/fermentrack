@@ -1,6 +1,8 @@
 from app.models import BrewPiDevice, Beer, FermentationProfile
 from gravity.models import GravitySensor, GravityLog, TiltTempCalibrationPoint, TiltGravityCalibrationPoint, \
     TiltConfiguration, TiltBridge, IspindelConfiguration, IspindelGravityCalibrationPoint
+from external_push.models import GenericPushTarget, BrewersFriendPushTarget, BrewfatherPushTarget, \
+    ThingSpeakPushTarget, GrainfatherPushTarget
 from constance import config
 
 
@@ -60,6 +62,22 @@ def dump_ispindel_gravity_calibration_points() -> list:
     """Generates a list of IspindelGravityCalibrationPoint object dicts by querying all
     IspindelGravityCalibrationPoint objects and calling their to_dict() method"""
     return [point.to_dict() for point in IspindelGravityCalibrationPoint.objects.all()]
+
+
+def dump_generic_push_targets() -> list:
+    return [target.to_dict() for target in GenericPushTarget.objects.all()]
+
+def dump_brewers_friend_push_targets() -> list:
+    return [target.to_dict() for target in BrewersFriendPushTarget.objects.all()]
+
+def dump_brewfather_push_targets() -> list:
+    return [target.to_dict() for target in BrewfatherPushTarget.objects.all()]
+
+def dump_thingspeak_push_targets() -> list:
+    return [target.to_dict() for target in ThingSpeakPushTarget.objects.all()]
+
+def dump_grainfather_push_targets() -> list:
+    return [target.to_dict() for target in GrainfatherPushTarget.objects.all()]
 
 
 def dump_fermentrack_configuration_options() -> dict:

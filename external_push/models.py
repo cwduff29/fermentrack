@@ -199,8 +199,7 @@ class GenericPushTarget(models.Model):
                         if device_info['FridgeSet'] != 0:
                             data_to_send['fridge_setting'] = float(device_info['FridgeSet'])
                     if device_info['State'] is not None:
-                        if device_info['State'] != 0:
-                            data_to_send['controller_state'] = float(device_info['State'])
+                        data_to_send['controller_state'] = float(device_info['State'])
 
                     # Gravity isn't retrieved via get_dashpanel_info, and as such requires special handling
                     try:
@@ -280,6 +279,49 @@ class GenericPushTarget(models.Model):
                 return True
         return False
 
+    def to_dict(self) -> dict:
+        return {
+            'name': self.name,
+            'status': self.status,
+            'push_frequency': self.push_frequency,
+            'api_key': self.api_key,
+            'brewpi_push_selection': self.brewpi_push_selection,
+            'brewpi_to_push': [str(d.uuid) for d in self.brewpi_to_push.all()],
+            'gravity_push_selection': self.gravity_push_selection,
+            'gravity_sensors_to_push': [str(s.uuid) for s in self.gravity_sensors_to_push.all()],
+            'target_type': self.target_type,
+            'target_host': self.target_host,
+            'target_port': self.target_port,
+            'data_format': self.data_format,
+        }
+
+    @classmethod
+    def from_dict(cls, input_dict, update=False) -> 'GenericPushTarget':
+        from app.models import BrewPiDevice
+        from gravity.models import GravitySensor
+        try:
+            obj = cls.objects.get(name=input_dict['name'])
+            if not update:
+                return obj
+        except cls.DoesNotExist:
+            obj = cls()
+        obj.name = input_dict['name']
+        obj.status = input_dict['status']
+        obj.push_frequency = input_dict['push_frequency']
+        obj.api_key = input_dict['api_key']
+        obj.brewpi_push_selection = input_dict['brewpi_push_selection']
+        obj.gravity_push_selection = input_dict['gravity_push_selection']
+        obj.target_type = input_dict['target_type']
+        obj.target_host = input_dict['target_host']
+        obj.target_port = input_dict['target_port']
+        obj.data_format = input_dict['data_format']
+        obj.save()
+        if input_dict.get('brewpi_to_push'):
+            obj.brewpi_to_push.set(BrewPiDevice.objects.filter(uuid__in=input_dict['brewpi_to_push']))
+        if input_dict.get('gravity_sensors_to_push'):
+            obj.gravity_sensors_to_push.set(GravitySensor.objects.filter(uuid__in=input_dict['gravity_sensors_to_push']))
+        return obj
+
 
 class BrewersFriendPushTarget(models.Model):
     class Meta:
@@ -328,6 +370,31 @@ class BrewersFriendPushTarget(models.Model):
 
     def __str__(self):
         return self.gravity_sensor_to_push.name
+
+    def to_dict(self) -> dict:
+        return {
+            'status': self.status,
+            'push_frequency': self.push_frequency,
+            'api_key': self.api_key,
+            'gravity_sensor_uuid': str(self.gravity_sensor_to_push.uuid),
+        }
+
+    @classmethod
+    def from_dict(cls, input_dict, update=False) -> 'BrewersFriendPushTarget':
+        from gravity.models import GravitySensor
+        sensor = GravitySensor.objects.get(uuid=input_dict['gravity_sensor_uuid'])
+        try:
+            obj = cls.objects.get(gravity_sensor_to_push=sensor)
+            if not update:
+                return obj
+        except cls.DoesNotExist:
+            obj = cls()
+        obj.status = input_dict['status']
+        obj.push_frequency = input_dict['push_frequency']
+        obj.api_key = input_dict['api_key']
+        obj.gravity_sensor_to_push = sensor
+        obj.save()
+        return obj
 
     def data_to_push(self):
         # For Brewers Friend, we're just cascading a single gravity sensor downstream to the app
@@ -459,6 +526,49 @@ class BrewfatherPushTarget(models.Model):
             return self.brewpi_to_push.device_name
         else:
             return "-ERROR-"
+
+    def to_dict(self) -> dict:
+        return {
+            'status': self.status,
+            'push_frequency': self.push_frequency,
+            'logging_url': self.logging_url,
+            'device_type': self.device_type,
+            'brewpi_uuid': str(self.brewpi_to_push.uuid) if self.brewpi_to_push else None,
+            'gravity_sensor_uuid': str(self.gravity_sensor_to_push.uuid) if self.gravity_sensor_to_push else None,
+        }
+
+    @classmethod
+    def from_dict(cls, input_dict, update=False) -> 'BrewfatherPushTarget':
+        from gravity.models import GravitySensor
+        from app.models import BrewPiDevice
+        gravity_sensor = None
+        brewpi = None
+        if input_dict.get('gravity_sensor_uuid'):
+            try:
+                gravity_sensor = GravitySensor.objects.get(uuid=input_dict['gravity_sensor_uuid'])
+            except GravitySensor.DoesNotExist:
+                pass
+        if input_dict.get('brewpi_uuid'):
+            try:
+                brewpi = BrewPiDevice.objects.get(uuid=input_dict['brewpi_uuid'])
+            except BrewPiDevice.DoesNotExist:
+                pass
+        obj = None
+        if update:
+            if gravity_sensor:
+                obj = cls.objects.filter(gravity_sensor_to_push=gravity_sensor).first()
+            elif brewpi:
+                obj = cls.objects.filter(brewpi_to_push=brewpi).first()
+        if obj is None:
+            obj = cls()
+        obj.status = input_dict['status']
+        obj.push_frequency = input_dict['push_frequency']
+        obj.logging_url = input_dict['logging_url']
+        obj.device_type = input_dict['device_type']
+        obj.gravity_sensor_to_push = gravity_sensor
+        obj.brewpi_to_push = brewpi
+        obj.save()
+        return obj
 
     def data_to_push(self):
         # For Brewfather, we're just cascading a single gravity sensor downstream to the app
@@ -696,6 +806,38 @@ class ThingSpeakPushTarget(models.Model):
 #    def __str__(self):
 #        return self.gravity_sensor_to_push.name
 
+    def to_dict(self) -> dict:
+        return {
+            'name': self.name,
+            'status': self.status,
+            'push_frequency': self.push_frequency,
+            'api_key': self.api_key,
+            'brewpi_uuid': str(self.brewpi_to_push.uuid) if self.brewpi_to_push else None,
+        }
+
+    @classmethod
+    def from_dict(cls, input_dict, update=False) -> 'ThingSpeakPushTarget':
+        from app.models import BrewPiDevice
+        try:
+            obj = cls.objects.get(name=input_dict['name'])
+            if not update:
+                return obj
+        except cls.DoesNotExist:
+            obj = cls()
+        brewpi = None
+        if input_dict.get('brewpi_uuid'):
+            try:
+                brewpi = BrewPiDevice.objects.get(uuid=input_dict['brewpi_uuid'])
+            except BrewPiDevice.DoesNotExist:
+                pass
+        obj.name = input_dict['name']
+        obj.status = input_dict['status']
+        obj.push_frequency = input_dict['push_frequency']
+        obj.api_key = input_dict['api_key']
+        obj.brewpi_to_push = brewpi
+        obj.save()
+        return obj
+
     def data_to_push(self):
         brewpi_to_send = BrewPiDevice.objects.filter(status=BrewPiDevice.STATUS_ACTIVE)
 #        grav_sensors_to_send = GravitySensor.objects.filter(status=GravitySensor.STATUS_ACTIVE)
@@ -837,6 +979,33 @@ class GrainfatherPushTarget(models.Model):
 
     def __str__(self):
         return self.gravity_sensor_to_push.name
+
+    def to_dict(self) -> dict:
+        return {
+            'status': self.status,
+            'push_frequency': self.push_frequency,
+            'logging_url': self.logging_url,
+            'gf_name': self.gf_name,
+            'gravity_sensor_uuid': str(self.gravity_sensor_to_push.uuid),
+        }
+
+    @classmethod
+    def from_dict(cls, input_dict, update=False) -> 'GrainfatherPushTarget':
+        from gravity.models import GravitySensor
+        sensor = GravitySensor.objects.get(uuid=input_dict['gravity_sensor_uuid'])
+        try:
+            obj = cls.objects.get(gravity_sensor_to_push=sensor)
+            if not update:
+                return obj
+        except cls.DoesNotExist:
+            obj = cls()
+        obj.status = input_dict['status']
+        obj.push_frequency = input_dict['push_frequency']
+        obj.logging_url = input_dict['logging_url']
+        obj.gf_name = input_dict['gf_name']
+        obj.gravity_sensor_to_push = sensor
+        obj.save()
+        return obj
 
     def data_to_push(self):
         # For Grainfather, we're just cascading a single gravity sensor downstream to the app

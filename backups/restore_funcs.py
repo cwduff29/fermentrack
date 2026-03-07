@@ -1,6 +1,8 @@
 from app.models import BrewPiDevice, Beer, FermentationProfile
 from gravity.models import GravitySensor, GravityLog, TiltTempCalibrationPoint, TiltGravityCalibrationPoint, \
     TiltConfiguration, TiltBridge, IspindelConfiguration, IspindelGravityCalibrationPoint
+from external_push.models import GenericPushTarget, BrewersFriendPushTarget, BrewfatherPushTarget, \
+    ThingSpeakPushTarget, GrainfatherPushTarget
 from constance import config
 
 
@@ -108,6 +110,42 @@ def restore_ispindel_gravity_calibration_points(obj_list:list, update:bool) -> l
         point.save()
         restore_status.append({'uuid': point.uuid, 'success': True})
     return restore_status
+
+def restore_generic_push_targets(obj_list: list, update: bool) -> list:
+    restore_status = []
+    for obj_dict in obj_list:
+        target = GenericPushTarget.from_dict(obj_dict, update=update)
+        restore_status.append({'name': target.name, 'success': True})
+    return restore_status
+
+def restore_brewers_friend_push_targets(obj_list: list, update: bool) -> list:
+    restore_status = []
+    for obj_dict in obj_list:
+        target = BrewersFriendPushTarget.from_dict(obj_dict, update=update)
+        restore_status.append({'gravity_sensor_uuid': obj_dict['gravity_sensor_uuid'], 'success': True})
+    return restore_status
+
+def restore_brewfather_push_targets(obj_list: list, update: bool) -> list:
+    restore_status = []
+    for obj_dict in obj_list:
+        target = BrewfatherPushTarget.from_dict(obj_dict, update=update)
+        restore_status.append({'success': True})
+    return restore_status
+
+def restore_thingspeak_push_targets(obj_list: list, update: bool) -> list:
+    restore_status = []
+    for obj_dict in obj_list:
+        target = ThingSpeakPushTarget.from_dict(obj_dict, update=update)
+        restore_status.append({'name': target.name, 'success': True})
+    return restore_status
+
+def restore_grainfather_push_targets(obj_list: list, update: bool) -> list:
+    restore_status = []
+    for obj_dict in obj_list:
+        target = GrainfatherPushTarget.from_dict(obj_dict, update=update)
+        restore_status.append({'gravity_sensor_uuid': obj_dict['gravity_sensor_uuid'], 'success': True})
+    return restore_status
+
 
 def restore_fermentrack_configuration_options(obj_dict:dict):
     """Work through a dict containing all the Constance options, updating each setting to match what we were passed"""
