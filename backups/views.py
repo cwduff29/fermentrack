@@ -68,10 +68,10 @@ class BackupCreateView(PermissionRequiredMixin, SuccessMessageMixin, ModelCreate
     success_message = _("Successfully created backup")
 
     def form_valid(self, form):
-        backup = form.instance
-        self.object = backup
-        backup.perform_backup()  # TODO - Replace with task
-        return super().form_valid(form)
+        from backups.tasks import perform_backup_task
+        response = super().form_valid(form)
+        perform_backup_task(self.object.pk)
+        return response
 
     def get_success_url(self):
         return reverse("backups:backup_detail", kwargs={"pk": self.object.pk})
