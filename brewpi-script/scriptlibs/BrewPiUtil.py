@@ -159,8 +159,8 @@ def setupSerial(dbConfig: BrewPiScriptConfig, baud_rate: int = 57600, time_out: 
 
     if ser:
         # discard everything in serial buffers
-        ser.flushInput()
-        ser.flushOutput()
+        ser.reset_input_buffer()
+        ser.reset_output_buffer()
     else:
         logMessage("Errors while opening serial port: \n" + error)
         sys.exit(0)  # Die if we weren't able to connect

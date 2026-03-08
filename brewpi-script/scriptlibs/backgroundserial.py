@@ -99,7 +99,7 @@ class BackGroundSerial():
             new_data = None
             if not self.error:
                 try:
-                    in_waiting = self.ser.inWaiting()
+                    in_waiting = self.ser.in_waiting
                     if in_waiting > 0:
                         new_data = self.ser.read(in_waiting)
                 except (IOError, OSError, SerialException) as e:
@@ -125,9 +125,9 @@ class BackGroundSerial():
                     self.ser.open()
                     self.error = False
                 except (ValueError, OSError, SerialException) as e:
-                    if self.ser.isOpen():
-                        self.ser.flushInput() # will help to close open handles
-                        self.ser.flushOutput() # will help to close open handles
+                    if self.ser.is_open:
+                        self.ser.reset_input_buffer() # will help to close open handles
+                        self.ser.reset_output_buffer() # will help to close open handles
                     self.ser.close()
                     self.fatal_error = 'Lost serial connection. Error: {0})'.format(str(e))
                     self.run = False

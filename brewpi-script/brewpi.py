@@ -743,7 +743,7 @@ def BrewPiScript(config_obj):
         bg_ser.stop()
     
     if ser:
-        if ser.isOpen():
+        if ser.is_open:
             ser.close()  # close port
             
     if conn:
