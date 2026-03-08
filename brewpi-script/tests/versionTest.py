@@ -1,6 +1,6 @@
 import unittest
 from brewpiVersion import AvrInfo
-from distutils.version import LooseVersion
+from packaging.version import Version as LooseVersion
 
 
 class VersionTestCase(unittest.TestCase):

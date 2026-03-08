@@ -69,7 +69,7 @@ def configure_serial_for_device(s, d):
     :param d the device (port, name, details) to configure the serial port
     """
     # for now, all devices connect at 57600 baud with defaults for parity/stop bits etc.
-    s.setBaudrate(57600)
+    s.baudrate = 57600
 
 
 if __name__ == '__main__':

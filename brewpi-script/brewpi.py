@@ -23,7 +23,7 @@ import traceback
 
 import urllib.parse as urllib
 
-from distutils.version import LooseVersion
+from packaging.version import Version as LooseVersion
 
 import json
 

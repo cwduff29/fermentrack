@@ -17,7 +17,7 @@
 import json
 import sys
 import time
-from distutils.version import LooseVersion
+from packaging.version import Version as LooseVersion
 from .BrewPiUtil import asciiToUnicode
 from serial import SerialException
 
@@ -53,7 +53,7 @@ def getVersionFromSerial(ser):
                 if line[0] == 'N':
                     data = line.strip('\n')[2:]
                     version = AvrInfo(data)
-                    if version and version.version != "0.0.0":
+                    if version and version.toString() != "0.0.0":
                         retry = False
                         break
             if time.time() - loopTime >= ser.timeout:
