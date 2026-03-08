@@ -170,8 +170,6 @@ TIME_ZONE = 'UTC'
 
 USE_I18N = True
 
-USE_L10N = True
-
 USE_TZ = True
 
 
@@ -244,12 +242,13 @@ CONSTANCE_CONFIG = {
     'USER_HAS_COMPLETED_CONFIGURATION': (False, 'Has the user completed the configuration workflow?', bool),
     'TEMP_CONTROL_SUPPORT_ENABLED': (True, 'Has the user enabled support for temp tracking/control (eg BrewPi)?', bool),
     'GRAVITY_SUPPORT_ENABLED': (True, 'Has the user enabled support for specific gravity sensors?', bool),
-    'LAST_GIT_CHECK': (pytz.timezone(TIME_ZONE).localize(datetime.datetime.now()),
+    'LAST_GIT_CHECK': (datetime.datetime.now(tz=datetime.timezone.utc),
                        'When was the last time we checked GitHub for upgrades?', datetime.datetime),
     'GIT_UPDATE_TYPE': ('dev', 'What Fermentrack upgrades would you like to download?', 'git_update_type_select'),
     'ALLOW_GIT_BRANCH_SWITCHING': (False, 'Should the user be allowed to switch Git branches from within the app?',
                                    bool),
-    'FIRMWARE_LIST_LAST_REFRESHED': (pytz.timezone(TIME_ZONE).localize(datetime.datetime.now())+datetime.timedelta(hours=-25), 'When was the firmware list last refreshed from fermentrack.com?',
+    'FIRMWARE_LIST_LAST_REFRESHED': (datetime.datetime.now(tz=datetime.timezone.utc) + datetime.timedelta(hours=-25),
+                                     'When was the firmware list last refreshed from fermentrack.com?',
                                      datetime.datetime),
     'PREFERRED_TIMEZONE': ("UTC", 'What timezone would you prefer to use in Fermentrack?', 'timezone_select'),
 
