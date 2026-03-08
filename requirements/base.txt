@@ -1,4 +1,4 @@
-Django==3.2.20
+Django~=4.2
 configobj==5.0.8       # required by brewpi.py
 
 # numpy==1.18.4 --no-binary=numpy  # The wheel for numpy also has issues (at least on Stretch)
@@ -6,7 +6,7 @@ configobj==5.0.8       # required by brewpi.py
 pytz==2023.3                # required by manage.py migrate
 sentry-sdk==1.30.0          # used for debugging
 django-constance[database]  # for managing user-configured constants
-GitPython==3.1.34           # for managing git integration
+GitPython>=3.1.41           # for managing git integration
 zeroconf==0.38.4            # for locating ESP8266 devices
 huey==2.4.5                 # asynchronous task queue
 pid             # for pid-file handling
@@ -15,7 +15,7 @@ pyserial        # for serial interaction
 pyudev==0.24.1          # for managing udev rules for serial devices
 requests==2.31.0        # for loading firmware data from websites
 
-esptool==2.8         # for flashing ESP8266 devices
+esptool>=4.0         # for flashing ESP8266/ESP32 devices; 4.x adds ESP32-S2/S3/C3 support
 
 #urllib3==1.26.9    # Requirement for the new pip resolver
 
@@ -25,7 +25,7 @@ aioblescan==0.2.6      # Replacement for beacontools for Tilt support
 
 django-environ==0.11.2  # https://github.com/joke2k/django-environ
 whitenoise==6.0.0  # https://github.com/evansd/whitenoise
-cryptography==36.0.2  # For the latest versions of esptool
+cryptography>=42.0.0  # For the latest versions of esptool; 36.x had numerous CVEs
 
 # uvicorn[standard]==0.17.6  # https://github.com/encode/uvicorn
 
