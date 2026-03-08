@@ -7,8 +7,8 @@ pytz==2023.3                # required by manage.py migrate
 sentry-sdk==1.30.0          # used for debugging
 django-constance[database]  # for managing user-configured constants
 GitPython>=3.1.41           # for managing git integration
-zeroconf==0.38.4            # for locating ESP8266 devices
-huey==2.4.5                 # asynchronous task queue
+zeroconf>=0.80.0            # for locating ESP8266 devices
+huey>=2.5.0                 # asynchronous task queue
 pid             # for pid-file handling
 pyserial        # for serial interaction
 

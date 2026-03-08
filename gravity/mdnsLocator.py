@@ -27,6 +27,9 @@ class ZeroconfListener(object):
             # print("Found '{}' running version '{}' of branch '{}' on a {}".format(info.server[:-1], info.properties['version'], info.properties['branch'], info.properties['board']))
             print("Found TiltBridge '{}.local'".format(info.server[:-1],))
 
+    def update_service(self, zeroconf_obj, type, name):
+        pass
+
 
 def locate_tiltbridge_services():
     zeroconf_obj = zeroconf.Zeroconf()
